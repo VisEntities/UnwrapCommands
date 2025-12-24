@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Game4Freak.io
+ * Copyright (C) 2025 Game4Freak.io
  * This mod is provided under the Game4Freak EULA.
  * Full legal terms can be found at https://game4freak.io/eula/
  */
@@ -268,7 +268,8 @@ namespace Oxide.Plugins
                     itemDisplayName = item.info.displayName.english;
                 }
 
-                SendReplyLocalized(player, Lang.Error_Cooldown, remaining.ToString("F1"), itemDisplayName);
+                string formattedTime = FormatTime(remaining);
+                SendReplyLocalized(player, Lang.Error_Cooldown, formattedTime, itemDisplayName);
 
                 if (profile.BlockUnwrapWhileOnCooldown)
                 {
@@ -591,6 +592,79 @@ namespace Oxide.Plugins
             return 0f;
         }
 
+        private string FormatTime(float seconds)
+        {
+            int totalSeconds = (int)Math.Ceiling(seconds);
+
+            if (totalSeconds < 60)
+            {
+                if (totalSeconds == 1)
+                {
+                    return "1 second";
+                }
+                return totalSeconds + " seconds";
+            }
+
+            int hours = totalSeconds / 3600;
+            int minutes = (totalSeconds % 3600) / 60;
+            int remainingSeconds = totalSeconds % 60;
+
+            if (hours > 0)
+            {
+                string hourText;
+                if (hours == 1)
+                {
+                    hourText = "1 hour";
+                }
+                else
+                {
+                    hourText = hours + " hours";
+                }
+
+                if (minutes > 0)
+                {
+                    string minuteText;
+                    if (minutes == 1)
+                    {
+                        minuteText = "1 minute";
+                    }
+                    else
+                    {
+                        minuteText = minutes + " minutes";
+                    }
+                    return hourText + " " + minuteText;
+                }
+
+                return hourText;
+            }
+
+            string minText;
+            if (minutes == 1)
+            {
+                minText = "1 minute";
+            }
+            else
+            {
+                minText = minutes + " minutes";
+            }
+
+            if (remainingSeconds > 0)
+            {
+                string secText;
+                if (remainingSeconds == 1)
+                {
+                    secText = "1 second";
+                }
+                else
+                {
+                    secText = remainingSeconds + " seconds";
+                }
+                return minText + " " + secText;
+            }
+
+            return minText;
+        }
+
         #endregion Cooldown System
 
         #region Helper Classes
@@ -765,7 +839,7 @@ namespace Oxide.Plugins
         {
             lang.RegisterMessages(new Dictionary<string, string>
             {
-                [Lang.Error_Cooldown] = "You must wait {0} seconds before unwrapping another {1}."
+                [Lang.Error_Cooldown] = "You must wait {0} before unwrapping another {1}."
             }, this, "en");
         }
 
