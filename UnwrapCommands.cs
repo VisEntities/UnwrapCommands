@@ -14,7 +14,7 @@ using Random = UnityEngine.Random;
 
 namespace Oxide.Plugins
 {
-    [Info("Unwrap Commands", "VisEntities", "1.0.0")]
+    [Info("Unwrap Commands", "VisEntities", "1.1.0")]
     [Description("Run commands when items are unwrapped.")]
     public class UnwrapCommands : RustPlugin
     {
@@ -250,7 +250,8 @@ namespace Oxide.Plugins
 
             if (!string.IsNullOrEmpty(profile.RequiredPermission) && !PermissionUtil.HasPermission(player, profile.RequiredPermission))
             {
-                return null;
+                SendReplyLocalized(player, Lang.Error_NoPermission);
+                return true;
             }
 
             string profileKey = GetProfileKey(profile);
@@ -833,13 +834,15 @@ namespace Oxide.Plugins
         private class Lang
         {
             public const string Error_Cooldown = "Error.Cooldown";
+            public const string Error_NoPermission = "Error.NoPermission";
         }
 
         protected override void LoadDefaultMessages()
         {
             lang.RegisterMessages(new Dictionary<string, string>
             {
-                [Lang.Error_Cooldown] = "You must wait {0} before unwrapping another {1}."
+                [Lang.Error_Cooldown] = "You must wait {0} before unwrapping another {1}.",
+                [Lang.Error_NoPermission] = "You do not have permission to unwrap this item."
             }, this, "en");
         }
 
